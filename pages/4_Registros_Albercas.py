@@ -8,7 +8,7 @@ from bd import engine
 # --- CONFIGURACION DE LA PAGINA---
 
 st.set_page_config(page_title="Registros de Calderas", page_icon="📋")
-st.header("📘 Historial de parámetros de albercas y cuerpos de agua")
+st.header("📘 Historial de parámetros de alberca y cuerpos de agua")
 
 # Para evitar error previo
 df = pd.DataFrame()
