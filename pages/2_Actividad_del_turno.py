@@ -66,8 +66,8 @@ if st.button("💾 Guardar registro"):
             with engine.begin() as conn:
                 for r in respuestas:
                     conn.execute(text("""
-                        INSERT INTO verificaciones_alberca (actividad, verificacion, observaciones, operador)
-                        VALUES (:actividad, :verificacion, :observaciones, :operador)
+                        INSERT INTO validacion_alberca (actividad, verificacion, operador, observaciones)
+                        VALUES (:actividad, :verificacion, :operador, :observaciones)
                     """), r)
 
             st.success("✅ Registros guardados correctamente.")
