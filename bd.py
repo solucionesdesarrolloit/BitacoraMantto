@@ -8,5 +8,5 @@ DB_PORT = os.getenv("DB_PORT", "5432")
 DB_NAME = os.getenv("DB_NAME")
 
 engine = create_engine(
-    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    "postgresql://postgres:Pctr-3856.cpa.ppcolabs@34.173.142.84:5432/bitacoramantto"
 )
