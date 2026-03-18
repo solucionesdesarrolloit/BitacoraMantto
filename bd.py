@@ -1,8 +1,8 @@
 import os
 from sqlalchemy import create_engine
 
-DB_USER = "user_app"
-DB_PASS = "Pass1234$"
+DB_USER = "postgres"
+DB_PASS = "Pctr-3856.cpa.ppcolabs"
 DB_NAME = "bitacoramantto"
 INSTANCE = "app-colaboradores-d408c:us-central1:postgres-bsf"
 
