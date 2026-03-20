@@ -9,7 +9,7 @@ from bd import engine
 st.set_page_config(page_title="Bitácora de Albercas", page_icon="🏊", layout="centered")
 
 st.header("🏊 Bitácora de Parámetros de Albercas y Cuerpos de Agua")
-st.markdown("Toma de lecturas de agua de albercas")
+st.markdown("Toma de lecturas de agua de albercas OOOOOOO")
 
 
 # ------ FORMULARIO ------
