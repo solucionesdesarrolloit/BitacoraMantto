@@ -4,7 +4,6 @@ from datetime import datetime
 from sqlalchemy import create_engine
 from bd import engine
 
-
 # ------ CONFIGURACIÓN DE LA PÁGINA ------
 
 st.set_page_config(page_title="Bitácora de Albercas", page_icon="🏊", layout="centered")
@@ -24,14 +23,8 @@ with st.form("parametros_form", clear_on_submit=True):
     ph = st.number_input("pH", min_value=0.0, max_value=14.0, step=0.1)
     temperatura = st.number_input("Temperatura (°C)", min_value=0.0, max_value=50.0, step=0.5)
     claridad = st.selectbox("Claridad del agua:", ["Clara", "Turbia"])
-
     quimico = st.selectbox("¿Se agregó químico?", ["No", "Si"])
-
-    if quimico == "Si":
-        quimico_agregado = st.text_input("¿Cuál?", placeholder="Ninguno")
-        quimico_final = quimico_agregado if quimico_agregado else "ninguno"
-    else:
-        quimico_final = "Ninguno"
+    quimico_agregado = st.text_input("¿Cuál?", placeholder="Ninguno")
     operador = st.selectbox("Operador de turno",
                             ["Adan Angeles", "Armando Sabino", "Omar", "Martin"])
 
@@ -45,6 +38,11 @@ if submit:
     if operador.strip() == "":
         st.error("⚠ Por favor, escribe el nombre del operador.")
     else:
+        # Validar químico: si está vacío, poner "ninguno"
+        if not quimico_agregado or quimico_agregado.strip() == "":
+            quimico_para_guardar = "Ninguno"
+        else:
+            quimico_para_guardar = quimico_agregado
         try:
             nuevo_registro = pd.DataFrame([{
                 "area": area,
@@ -53,7 +51,7 @@ if submit:
                 "temperatura": temperatura,
                 "claridad": claridad,
                 "quimico": quimico,
-                "quimico_agregado": quimico_final,
+                "quimico_agregado": quimico_para_guardar,
                 "operador": operador
             }])
 
