@@ -9,4 +9,4 @@ INSTANCE = "app-colaboradores-d408c:us-central1:postgres-bsf"
 engine = create_engine(
     f"postgresql+psycopg2://{DB_USER}:{DB_PASS}@/{DB_NAME}"
     f"?host=/cloudsql/{INSTANCE}"
-)
+)       

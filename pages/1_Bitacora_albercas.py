@@ -24,9 +24,16 @@ with st.form("parametros_form", clear_on_submit=True):
     ph = st.number_input("pH", min_value=0.0, max_value=14.0, step=0.1)
     temperatura = st.number_input("Temperatura (°C)", min_value=0.0, max_value=50.0, step=0.5)
     claridad = st.selectbox("Claridad del agua:", ["Clara", "Turbia"])
+
     quimico = st.selectbox("¿Se agregó químico?", ["No", "Si"])
-    quimico_agregado = st.text_input("¿Cuál?")
-    operador = st.text_input("Operador de turno")
+
+    if quimico == "Si":
+        quimico_agregado = st.text_input("¿Cuál?", placeholder="Ninguno")
+        quimico_final = quimico_agregado if quimico_agregado else "ninguno"
+    else:
+        quimico_final = "Ninguno"
+    operador = st.selectbox("Operador de turno",
+                            ["Adan Angeles", "Armando Sabino", "Omar", "Martin"])
 
     submit = st.form_submit_button("💾 Guardar registro")
 
@@ -46,7 +53,7 @@ if submit:
                 "temperatura": temperatura,
                 "claridad": claridad,
                 "quimico": quimico,
-                "quimico_agregado": quimico_agregado,
+                "quimico_agregado": quimico_final,
                 "operador": operador
             }])
 
