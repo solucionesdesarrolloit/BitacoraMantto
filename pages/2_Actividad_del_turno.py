@@ -1,11 +1,7 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
-from sqlalchemy import create_engine
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from bd import engine
-
-# ------ CONFIGURACIÓN DE LA PÁGINA ------
 
 st.set_page_config(page_title="Bitácora de Actividades", page_icon="🏊", layout="centered")
 
@@ -37,18 +33,32 @@ actividades = [
     "23. Revisar que equipos de filtrado y calentadores funcionen bien",
     "24. Apagar luces de albercas"
 ]
-operador = st.selectbox("Operador de turno",
-                        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
-turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
+
+# Select operador
+operador = st.selectbox(
+    "Operador de turno",
+    ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"]
+)
 
 respuestas = []
-for act in actividades:
+
+# Generar formulario dinámico
+for i, act in enumerate(actividades):
     st.markdown(f"**{act}**")
     col1, col2 = st.columns([1, 2])
+
     with col1:
-        verificacion = st.selectbox("", ["N/A","No", "Si"], key=act)
+        verificacion = st.selectbox(
+            "",
+            ["N/A", "No", "Si"],
+            key=f"verif_{i}"
+        )
+
     with col2:
-        observaciones = st.text_input("Observaciones", key=act+"_obs")
+        observaciones = st.text_input(
+            "Observaciones",
+            key=f"obs_{i}"
+        )
 
     respuestas.append({
         "actividad": act,
@@ -57,21 +67,25 @@ for act in actividades:
         "operador": operador
     })
 
-    
 # --- Botón para guardar ---
 if st.button("💾 Guardar registro"):
-    if operador == "Selecciona operador":
-        st.warning("Selecciona un operador valido")
-        st.stop()
-    else:
-        try:
-            with engine.begin() as conn:
-                for r in respuestas:
-                    conn.execute(text("""
-                        INSERT INTO validacion_alberca (actividad, verificacion, operador, observaciones)
-                        VALUES (:actividad, :verificacion, :operador, :observaciones)
-                    """), r)
 
-            st.success("✅ Registros guardados correctamente.")
-        except Exception as e:
-            st.error(f"❌ Error al guardar los datos: {e}")
+    if operador == "Selecciona operador":
+        st.warning("Selecciona un operador válido")
+        st.stop()
+
+    try:
+        with engine.begin() as conn:
+            for r in respuestas:
+                conn.execute(text("""
+                    INSERT INTO validacion_alberca (actividad, verificacion, operador, observaciones)
+                    VALUES (:actividad, :verificacion, :operador, :observaciones)
+                """), r)
+
+        st.success("✅ Registros guardados correctamente.")
+
+        # 🔥 Limpiar formulario (reinicia toda la app)
+        st.rerun()
+
+    except Exception as e:
+        st.error(f"❌ Error al guardar los datos: {e}")
