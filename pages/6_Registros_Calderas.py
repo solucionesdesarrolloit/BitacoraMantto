@@ -10,8 +10,6 @@ st.set_page_config(page_title="Registros de Calderas", page_icon="📋")
 st.header("📘 Hisorial de Registros de Calderas")
 
 # ---- FILTROS -----
-
-fecha = st.date_input("Fecha", value=date.today())
 calderas_lista = ["(Todos)", "Caldera 1", "Caldera 2", "Caldera 3"]
 caldera = st.selectbox("Caldera", calderas_lista)
 try:
@@ -24,6 +22,8 @@ except:
     lista_turnos = ["(Todos)"]
 
 turno = st.selectbox("Selecciona turno", lista_turnos)
+
+fecha = st.date_input("Fecha", value=date.today())
 
 # Obtener operadores únicos
 #try:
@@ -40,38 +40,43 @@ if st.button("🔍 Buscar registros"):
         query = """
             SELECT turno, caldera, actividad, observaciones, operador, fecha_registro
             FROM calderas
-            WHERE turno = :turno
-            AND DATE(fecha_registro) = :fecha
+            WHERE DATE(fecha_registro) = :fecha
         """
-        params = {"turno": turno, "fecha": fecha}
+
+        params = {"fecha": fecha}
+
+        # ✅ aplicar filtro solo si NO es "(Todos)"
+        if turno != "(Todos)":
+            query += " AND turno = :turno"
+            params["turno"] = turno
 
         if caldera != "(Todos)":
             query += " AND caldera = :caldera"
             params["caldera"] = caldera
 
-#        if operador != "(Todos)":
-#            query += " AND operador = :operador"
-#            params["operador"] = operador
+        # si después usas operador, va igual:
+        # if operador != "(Todos)":
+        #     query += " AND operador = :operador"
+        #     params["operador"] = operador
 
         query += " ORDER BY fecha_registro, id"
 
         df = pd.read_sql(text(query), engine, params=params)
 
         # Convertir a hora local
-        df['fecha_registro'] = pd.to_datetime(df['fecha_registro'], utc=True).dt.tz_convert('America/Mexico_City')
+        df['fecha_registro'] = pd.to_datetime(df['fecha_registro'], utc=True)\
+            .dt.tz_convert('America/Mexico_City')
 
         if df.empty:
             st.warning("⚠ No se encontraron registros para los filtros seleccionados.")
         else:
             st.success(f"📌 Registros encontrados: {len(df)}")
             
-            # Agrupar por envío del formulario
             grouped = df.groupby(['turno', 'caldera', 'operador', 'fecha_registro'])
 
             for (g_turno, g_caldera, g_operador, g_fecha), group in grouped:
                 fecha_fmt = g_fecha.strftime("%d/%m/%Y %H:%M")
                 
-                # Construir el HTML de la tarjeta
                 html = f"""
 <div style="
     border: 2px solid #e6e6e6;
@@ -80,13 +85,13 @@ if st.button("🔍 Buscar registros"):
     margin-bottom: 15px;
     background-color: #fafafa;
 ">
-    <h4 style="margin: 0 0 10px 0;">📋 {g_turno}</h4>
+    <h4>📋 {g_turno}</h4>
     <p><strong>Caldera:</strong> {g_caldera}</p>
     <p><strong>Operador:</strong> {g_operador}</p>
     <p><strong>Fecha:</strong> {fecha_fmt}</p>
     <hr>
 """
-                # Agregar actividades dentro de la tarjeta
+
                 for row in group.itertuples():
                     obs = row.observaciones.strip() if row.observaciones else "—"
                     html += f"<p><strong>{row.actividad}:</strong> {obs}</p>"

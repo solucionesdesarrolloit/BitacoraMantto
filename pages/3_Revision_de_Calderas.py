@@ -1,8 +1,7 @@
 import streamlit as st
-import os
 import pandas as pd
 from datetime import datetime
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from bd import engine
 
 # ------ CONFIGURACIÓN DE LA PÁGINA ------ 
@@ -11,6 +10,18 @@ st.set_page_config(page_title="Bitácora Calderas", page_icon="🏊")
 
 st.header("🧾 Revisión de calderas")
 
+# ---- SESSION STATE ----
+if "enviado" not in st.session_state:
+    st.session_state.enviado = False
+
+if "mensaje" not in st.session_state:
+    st.session_state.mensaje = ""
+
+# ---- MOSTRAR MENSAJE ----
+if st.session_state.mensaje:
+    st.success(st.session_state.mensaje)
+
+# ------ LISTA DE ACTIVIDADES ------
 actividades = [
     "H.P Caldera",
     "Modelo Caldera",
@@ -44,10 +55,20 @@ actividades = [
 # ------- FORMULARIO ----------
 with st.form("calderas_form", clear_on_submit=True):
 
-    operador = st.selectbox("Operador de turno",
-                        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
-    turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
-    caldera = st.selectbox("Caldera", ["Caldera 1", "Caldera 2", "Caldera 3"])
+    operador = st.selectbox(
+        "Operador de turno",
+        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"]
+    )
+
+    turno = st.selectbox(
+        "Turno",
+        ["Turno Matutino", "Turno Vespertino"]
+    )
+
+    caldera = st.selectbox(
+        "Caldera",
+        ["Caldera 1", "Caldera 2", "Caldera 3"]
+    )
 
     respuestas = []
 
@@ -59,34 +80,50 @@ with st.form("calderas_form", clear_on_submit=True):
     submit = st.form_submit_button("💾 Guardar registro")
 
 # ----- GUARDAR -------
-if submit:
+if submit and not st.session_state.enviado:
+
     if operador == "Selecciona operador":
         st.warning("Selecciona un operador valido")
         st.stop()
-    else:
-        try: ## aqui para abajo 
-            with engine.connect() as conn:
-                for act, obs in respuestas:
 
-                    # 👇 Solo guardar si el usuario escribió algo
-                    if obs.strip() == "":
-                        continue  
+    try:
+        with engine.connect() as conn:
+            for act, obs in respuestas:
 
-                    query = text("""
-                        INSERT INTO calderas (turno, caldera, actividad, observaciones, operador)
-                        VALUES (:turno, :caldera, :actividad, :observaciones, :operador)
-                    """)
-                    conn.execute(query, {
-                        "turno": turno,
-                        "caldera": caldera,
-                        "actividad": act,
-                        "observaciones": obs,
-                        "operador": operador
-                    })
-                conn.commit()
+                # solo guardar si hay contenido
+                if obs.strip() == "":
+                    continue  
 
-            st.success("✅ Registro guardado correctamente")
+                query = text("""
+                    INSERT INTO calderas (turno, caldera, actividad, observaciones, operador)
+                    VALUES (:turno, :caldera, :actividad, :observaciones, :operador)
+                """)
 
-        except Exception as e:
-            st.error(f"❌ Error al guardar: {e}")
+                conn.execute(query, {
+                    "turno": turno,
+                    "caldera": caldera,
+                    "actividad": act,
+                    "observaciones": obs,
+                    "operador": operador
+                })
 
+            conn.commit()
+
+        # ---- LIMPIAR INPUTS ----
+        for act in actividades:
+            st.session_state[f"{act}_obs"] = ""
+
+        # ---- MENSAJE PERSISTENTE ----
+        st.session_state.mensaje = "✅ Registro guardado correctamente"
+
+        # ---- BLOQUEAR DOBLE ENVÍO ----
+        st.session_state.enviado = True
+
+        st.rerun()
+
+    except Exception as e:
+        st.error(f"❌ Error al guardar: {e}")
+
+# ---- RESET AUTOMÁTICO ----
+if st.session_state.enviado:
+    st.session_state.enviado = False
