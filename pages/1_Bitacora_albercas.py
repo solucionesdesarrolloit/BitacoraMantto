@@ -26,38 +26,38 @@ with st.form("parametros_form", clear_on_submit=True):
     quimico = st.selectbox("¿Se agregó químico?", ["No", "Si"])
     quimico_agregado = st.text_input("¿Cuál?", placeholder="Ninguno")
     operador = st.selectbox("Operador de turno",
-                            ["Adan Angeles", "Armando Sabino", "Omar", "Martin"], placeholder="Selecciona operador")
+                            ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
 
     submit = st.form_submit_button("💾 Guardar registro")
 
 
 # ------- GUARDADO ------
 if submit:
+    if operador == "Selecciona operador":
+        st.warning("Selecciona un operador válido")
+        st.stop()
 
-    # Validar operador obligatorio
-    if operador.strip() == "":
-        st.error("⚠ Por favor, escribe el nombre del operador.")
+    # Validar químico
+    if not quimico_agregado or quimico_agregado.strip() == "":
+        quimico_para_guardar = "Ninguno"
     else:
-        # Validar químico: si está vacío, poner "ninguno"
-        if not quimico_agregado or quimico_agregado.strip() == "":
-            quimico_para_guardar = "Ninguno"
-        else:
-            quimico_para_guardar = quimico_agregado
-        try:
-            nuevo_registro = pd.DataFrame([{
-                "area": area,
-                "cloro": cloro,
-                "ph": ph,
-                "temperatura": temperatura,
-                "claridad": claridad,
-                "quimico": quimico,
-                "quimico_agregado": quimico_para_guardar,
-                "operador": operador
-            }])
+        quimico_para_guardar = quimico_agregado
 
-            nuevo_registro.to_sql("bitacora_albercas", engine, if_exists="append", index=False)
+    try:
+        nuevo_registro = pd.DataFrame([{
+            "area": area,
+            "cloro": cloro,
+            "ph": ph,
+            "temperatura": temperatura,
+            "claridad": claridad,
+            "quimico": quimico,
+            "quimico_agregado": quimico_para_guardar,
+            "operador": operador
+        }])
+
+        nuevo_registro.to_sql("bitacora_albercas", engine, if_exists="append", index=False)
             
-            st.success("✅ Registro guardado exitosamente.")
+        st.success("✅ Registro guardado exitosamente.")
 
-        except Exception as e:
-            st.error(f"❌ Error al guardar: {e}")
+    except Exception as e:
+        st.error(f"❌ Error al guardar: {e}")
