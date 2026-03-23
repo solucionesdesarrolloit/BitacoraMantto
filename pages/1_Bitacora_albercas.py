@@ -53,7 +53,8 @@ if submit:
             "claridad": claridad,
             "quimico": quimico,
             "quimico_agregado": quimico_para_guardar,
-            "operador": operador
+            "operador": operador,
+            "turno": turno
         }])
 
         nuevo_registro.to_sql("bitacora_albercas", engine, if_exists="append", index=False)

@@ -60,6 +60,9 @@ if buscar:
 
     df = pd.read_sql(text(query), engine, params=params)
 
+    # Convertir a hora local
+    df['fecha_registro'] = pd.to_datetime(df['fecha_registro'], utc=True).dt.tz_convert('America/Mexico_City')
+
     if df.empty:
         st.warning("⚠ No hay registros para los filtros seleccionados.")
 
@@ -82,6 +85,7 @@ if buscar and not df.empty:
                 ">
                     <h4 style="margin-bottom:5px;">🏊 {row['area']}</h4>
                     <h5 <strong>Operador:</strong> {row['operador']}</h5>
+                    <h5 <strong>Turno:</strong> {row['turno']}</h5>
                     <p><strong>Cloro:</strong> {row['cloro']} ppm</p>
                     <p><strong>pH:</strong> {row['ph']}</p>
                     <p><strong>Temperatura:</strong> {row['temperatura']} °C</p>
