@@ -14,7 +14,9 @@ st.markdown("Toma de lecturas de agua de albercas")
 
 # ------ FORMULARIO ------
 with st.form("parametros_form", clear_on_submit=True):
-
+    operador = st.selectbox("Operador de turno",
+                        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
+    turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
     area = st.selectbox("Selecciona la alberca:", 
                         ["Alberca Interior", "Alberca Exterior", "Chapoteadero", 
                          "Jacuzzi adultos", "Jacuzzi niños", "Canal de Nado"])
@@ -25,8 +27,7 @@ with st.form("parametros_form", clear_on_submit=True):
     claridad = st.selectbox("Claridad del agua:", ["Clara", "Turbia"])
     quimico = st.selectbox("¿Se agregó químico?", ["No", "Si"])
     quimico_agregado = st.text_input("¿Cuál?", placeholder="Ninguno")
-    operador = st.selectbox("Operador de turno",
-                            ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
+
 
     submit = st.form_submit_button("💾 Guardar registro")
 
