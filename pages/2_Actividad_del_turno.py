@@ -58,12 +58,16 @@ for act in actividades:
         "turno": turno
     })
 
-# --- Botón para guardar ---
-if st.button("💾 Guardar registro"):
+# ---- Botón para guardar ----
+if "guardado" not in st.session_state:
+    st.session_state.guardado = False
+
+if st.button("💾 Guardar registro", disabled=st.session_state.guardado):
     if operador == "Selecciona operador":
         st.warning("Selecciona un operador valido")
         st.stop()
     else:
+        st.session_state.guardado = True  # Deshabilita el botón inmediatamente
         try:
             with engine.begin() as conn:
                 for r in respuestas:
@@ -79,6 +83,8 @@ if st.button("💾 Guardar registro"):
                     del st.session_state[act]
                 if act + "_obs" in st.session_state:
                     del st.session_state[act + "_obs"]
+            st.session_state.guardado = False  # Rehabilita para nuevo registro
             st.rerun()
         except Exception as e:
+            st.session_state.guardado = False
             st.error(f"❌ Error al guardar los datos: {e}")
