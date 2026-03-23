@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import create_engine, text
 from bd import engine
 
-# Cnfiguracion de la pagina 
+# ------ CONFIGURACIÓN DE LA PÁGINA ------ 
 
 st.set_page_config(page_title="Bitácora Calderas", page_icon="🏊")
 
@@ -41,7 +41,7 @@ actividades = [
     "No. De Suavizador de Operación",
 ]
 
-# ------------------ FORMULARIO ------------------
+# ------- FORMULARIO ----------
 with st.form("calderas_form", clear_on_submit=True):
 
     turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
@@ -57,7 +57,7 @@ with st.form("calderas_form", clear_on_submit=True):
 
     submit = st.form_submit_button("💾 Guardar registro")
 
-# --------------- GUARDAR EN POSTGRES ----------------
+# ----- GUARDAR -------
 if submit:
     if operador.strip() == "":
         st.error("⚠ Por favor, escribe el nombre del operador.")

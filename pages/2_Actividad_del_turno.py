@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy import create_engine, text
 from bd import engine
 
-# CONFIGURACIÓN DE LA PÁGINA
+# ------ CONFIGURACIÓN DE LA PÁGINA ------
 
 st.set_page_config(page_title="Bitácora de Actividades", page_icon="🏊", layout="centered")
 
@@ -37,7 +37,8 @@ actividades = [
     "23. Revisar que equipos de filtrado y calentadores funcionen bien",
     "24. Apagar luces de albercas"
 ]
-operador = st.text_input("Operador que realiza:")
+operador = st.selectbox("Operador que realiza:"
+                        ["Adan Angeles", "Armando Sabino", "Omar", "Martin"])
 
 respuestas = []
 for act in actividades:
@@ -48,7 +49,6 @@ for act in actividades:
     with col2:
         observaciones = st.text_input("Observaciones", key=act+"_obs")
 
-    # ← ESTA PARTE FALTABA
     respuestas.append({
         "actividad": act,
         "verificacion": verificacion,

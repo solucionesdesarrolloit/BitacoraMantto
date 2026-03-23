@@ -4,7 +4,7 @@ from datetime import date
 from sqlalchemy import create_engine, text
 from bd import engine
 
-# --- CONFIGURACIÓN DE PÁGINA ---
+# ------ CONFIGURACIÓN DE LA PÁGINA ------
 st.set_page_config(page_title="Bitácora de Actividades", page_icon="📋", layout="centered")
 st.header("📘 Historial de Registros de actividades del Turno")
 

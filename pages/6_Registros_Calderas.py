@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 from datetime import date, datetime
 from bd import engine
 
-# --- FIGURACION DE LA PAGINA---
+# ------ CONFIGURACIÓN DE LA PÁGINA ------
 
 st.set_page_config(page_title="Registros de Calderas", page_icon="📋")
 st.header("📘 Hisorial de Registros de Calderas")

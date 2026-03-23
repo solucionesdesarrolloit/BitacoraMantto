@@ -5,7 +5,7 @@ from datetime import date
 from datetime import datetime
 from bd import engine
 
-# --- CONFIGURACION DE LA PAGINA---
+# ------ CONFIGURACIÓN DE LA PÁGINA ------
 
 st.set_page_config(page_title="Registros de Calderas", page_icon="📋")
 st.header("📘 Historial de parámetros de albercas y cuerpos de agua")
@@ -60,7 +60,6 @@ if buscar:
 
     df = pd.read_sql(text(query), engine, params=params)
 
-    # ⚠ MENSAJE SI NO HUBO RESULTADOS
     if df.empty:
         st.warning("⚠ No hay registros para los filtros seleccionados.")
 
