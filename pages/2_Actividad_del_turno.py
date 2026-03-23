@@ -37,7 +37,7 @@ actividades = [
     "23. Revisar que equipos de filtrado y calentadores funcionen bien",
     "24. Apagar luces de albercas"
 ]
-operador = st.selectbox("Operador que realiza:"
+operador = st.selectbox("Operador que realiza:",
                         ["Adan Angeles", "Armando Sabino", "Omar", "Martin"])
 
 respuestas = []
