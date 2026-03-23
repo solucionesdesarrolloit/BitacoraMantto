@@ -23,7 +23,7 @@ try:
 except:
     lista_operadores = ["(Todos)"]
 
-operador = st.selectbox("Operador", lista_operadores)
+#operador = st.selectbox("Operador", lista_operadores)
 
 # ----- CONSULTA -----
 if st.button("🔍 Buscar registros"):
@@ -40,9 +40,9 @@ if st.button("🔍 Buscar registros"):
             query += " AND caldera = :caldera"
             params["caldera"] = caldera
 
-        if operador != "(Todos)":
-            query += " AND operador = :operador"
-            params["operador"] = operador
+#        if operador != "(Todos)":
+#            query += " AND operador = :operador"
+#            params["operador"] = operador
 
         query += " ORDER BY fecha_registro, id"
 

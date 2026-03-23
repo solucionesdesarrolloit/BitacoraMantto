@@ -38,7 +38,8 @@ actividades = [
     "24. Apagar luces de albercas"
 ]
 operador = st.selectbox("Operador de turno",
-                        ["Adan Angeles", "Armando Sabino", "Omar", "Martin"])
+                        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
+turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
 
 respuestas = []
 for act in actividades:
@@ -57,10 +58,11 @@ for act in actividades:
     })
 
     
-    # --- Botón para guardar ---
+# --- Botón para guardar ---
 if st.button("💾 Guardar registro"):
-    if operador == "":
-        st.warning("⚠ Por favor, escribe el nombre del operador.")
+    if operador == "Selecciona operador":
+        st.warning("Selecciona un operador valido")
+        st.stop()
     else:
         try:
             with engine.begin() as conn:

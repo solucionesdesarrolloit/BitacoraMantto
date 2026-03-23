@@ -10,29 +10,44 @@ st.header("📘 Historial de Registros de actividades del Turno")
 
 # --- FILTROS ---
 fecha = st.date_input("Fecha", value=date.today())
+try:
+    df_turnos = pd.read_sql(
+        "SELECT DISTINCT turno FROM validacion_alberca ORDER BY turno",
+        engine
+    )
+    lista_turnos = ["(Todos)"] + df_turnos["turno"].dropna().tolist()
+except:
+    lista_turnos = ["(Todos)"]
+
+turno = st.selectbox("Selecciona turno", lista_turnos)
 
 # Obtener operadores únicos de la tabla
-try:
-    df_op = pd.read_sql("SELECT DISTINCT operador FROM validacion_alberca ORDER BY operador", engine)
-    lista_operadores = ["(Todos)"] + df_op["operador"].tolist()
-except:
-    lista_operadores = ["(Todos)"]
+#try:
+#    df_op = pd.read_sql("SELECT DISTINCT operador FROM validacion_alberca ORDER BY operador", engine)
+#    lista_operadores = ["(Todos)"] + df_op["operador"].tolist()
+#except:
+#    lista_operadores = ["(Todos)"]
 
-operador = st.selectbox("Operador", lista_operadores)
+#operador = st.selectbox("Operador", lista_operadores)
+
 
 # --- CONSULTA ---
 if st.button("🔍 Buscar registros"):
     try:
         query = """
-            SELECT actividad, verificacion, observaciones, operador, fecha_registro
+            SELECT actividad, verificacion, observaciones, operador, fecha_registro, turno
             FROM validacion_alberca
             WHERE DATE(fecha_registro) = :fecha
         """
         params = {"fecha": fecha}
+        
+        if turno != "(Todos)":
+            query += " AND turno = :turno"
+            params["turno"] = turno
 
-        if operador != "(Todos)":
-            query += " AND operador = :operador"
-            params["operador"] = operador
+#        if operador != "(Todos)":
+#            query += " AND operador = :operador"
+#            params["operador"] = operador
 
         query += " ORDER BY fecha_registro, id"
 

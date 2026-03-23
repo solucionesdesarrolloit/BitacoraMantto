@@ -46,7 +46,8 @@ with st.form("calderas_form", clear_on_submit=True):
 
     turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
     caldera = st.selectbox("Caldera", ["Caldera 1", "Caldera 2", "Caldera 3"])
-    operador = st.text_input("Nombre del operador")
+    operador = st.selectbox("Operador de turno",
+                        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
 
     respuestas = []
 
@@ -59,8 +60,9 @@ with st.form("calderas_form", clear_on_submit=True):
 
 # ----- GUARDAR -------
 if submit:
-    if operador.strip() == "":
-        st.error("⚠ Por favor, escribe el nombre del operador.")
+    if operador == "Selecciona operador":
+        st.warning("Selecciona un operador valido")
+        st.stop()
     else:
         try: ## aqui para abajo 
             with engine.connect() as conn:
