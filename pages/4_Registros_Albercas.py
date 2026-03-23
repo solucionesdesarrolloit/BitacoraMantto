@@ -37,7 +37,7 @@ areas = [
 area = st.selectbox("Área:", areas)
 
 # Operador con selectbox
-operador = st.selectbox("Operador:", operadores_lista)
+#operador = st.selectbox("Operador:", operadores_lista)
 
 buscar = st.button("🔍 Buscar registros")
 
@@ -54,9 +54,9 @@ if buscar:
         query += " AND area = :area"
         params["area"] = area
 
-    if operador != "Todos":
-        query += " AND operador = :operador"
-        params["operador"] = operador
+    #if operador != "Todos":
+    #    query += " AND operador = :operador"
+    #    params["operador"] = operador
 
     df = pd.read_sql(text(query), engine, params=params)
 
