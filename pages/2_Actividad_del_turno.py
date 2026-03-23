@@ -73,6 +73,12 @@ if st.button("💾 Guardar registro"):
                     """), r)
 
             st.success("✅ Registros guardados correctamente.")
+            # Limpiar session_state de todos los widgets
+            for act in actividades:
+                if act in st.session_state:
+                    del st.session_state[act]
+                if act + "_obs" in st.session_state:
+                    del st.session_state[act + "_obs"]
             st.rerun()
         except Exception as e:
             st.error(f"❌ Error al guardar los datos: {e}")

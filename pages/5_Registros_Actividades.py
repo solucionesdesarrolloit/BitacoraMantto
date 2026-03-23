@@ -8,6 +8,7 @@ from bd import engine
 st.set_page_config(page_title="Bitácora de Actividades", page_icon="📋", layout="centered")
 st.header("📘 Historial de Registros de actividades del Turno")
 
+
 # --- FILTROS ---
 fecha = st.date_input("Fecha", value=date.today())
 try:
@@ -40,7 +41,7 @@ if st.button("🔍 Buscar registros"):
             WHERE DATE(fecha_registro) = :fecha
         """
         params = {"fecha": fecha}
-        
+
         if turno != "(Todos)":
             query += " AND turno = :turno"
             params["turno"] = turno
@@ -53,6 +54,9 @@ if st.button("🔍 Buscar registros"):
 
         df = pd.read_sql(text(query), engine, params=params)
 
+        # Convertir a hora local
+        df['fecha_registro'] = pd.to_datetime(df['fecha_registro'], utc=True).dt.tz_convert('America/Mexico_City')
+
         if df.empty:
             st.warning("⚠ No se encontraron registros para los filtros seleccionados.")
         else:
@@ -64,7 +68,7 @@ if st.button("🔍 Buscar registros"):
             for (g_operador, g_fecha), group in grouped:
                 fecha_fmt = pd.to_datetime(g_fecha).strftime("%d/%m/%Y %H:%M")
 
-                # Construir tarjeta HTML
+            # Construir tarjeta HTML
                 html = f"""
 <div style="
     border: 2px solid #e6e6e6;
