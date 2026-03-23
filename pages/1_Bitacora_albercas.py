@@ -26,7 +26,7 @@ with st.form("parametros_form", clear_on_submit=True):
     quimico = st.selectbox("¿Se agregó químico?", ["No", "Si"])
     quimico_agregado = st.text_input("¿Cuál?", placeholder="Ninguno")
     operador = st.selectbox("Operador de turno",
-                            ["Adan Angeles", "Armando Sabino", "Omar", "Martin"])
+                            ["Adan Angeles", "Armando Sabino", "Omar", "Martin"], placeholder="Selecciona operador")
 
     submit = st.form_submit_button("💾 Guardar registro")
 
