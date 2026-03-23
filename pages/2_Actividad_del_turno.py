@@ -73,5 +73,6 @@ if st.button("💾 Guardar registro"):
                     """), r)
 
             st.success("✅ Registros guardados correctamente.")
+            st.rerun()
         except Exception as e:
             st.error(f"❌ Error al guardar los datos: {e}")
