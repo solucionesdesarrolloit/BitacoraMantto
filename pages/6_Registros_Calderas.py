@@ -10,18 +10,27 @@ st.set_page_config(page_title="Registros de Calderas", page_icon="📋")
 st.header("📘 Hisorial de Registros de Calderas")
 
 # ---- FILTROS -----
-turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
-calderas_lista = ["(Todos)", "Caldera 1", "Caldera 2", "Caldera 3"]
-caldera = st.selectbox("Caldera", calderas_lista)
 
 fecha = st.date_input("Fecha", value=date.today())
+calderas_lista = ["(Todos)", "Caldera 1", "Caldera 2", "Caldera 3"]
+caldera = st.selectbox("Caldera", calderas_lista)
+try:
+    df_turnos = pd.read_sql(
+        "SELECT DISTINCT turno FROM calderas ORDER BY turno",
+        engine
+    )
+    lista_turnos = ["(Todos)"] + df_turnos["turno"].dropna().tolist()
+except:
+    lista_turnos = ["(Todos)"]
+
+turno = st.selectbox("Selecciona turno", lista_turnos)
 
 # Obtener operadores únicos
-try:
-    df_op = pd.read_sql("SELECT DISTINCT operador FROM calderas ORDER BY operador", engine)
-    lista_operadores = ["(Todos)"] + df_op["operador"].tolist()
-except:
-    lista_operadores = ["(Todos)"]
+#try:
+#    df_op = pd.read_sql("SELECT DISTINCT operador FROM calderas ORDER BY operador", engine)
+#    lista_operadores = ["(Todos)"] + df_op["operador"].tolist()
+#except:
+#    lista_operadores = ["(Todos)"]
 
 #operador = st.selectbox("Operador", lista_operadores)
 
@@ -47,6 +56,9 @@ if st.button("🔍 Buscar registros"):
         query += " ORDER BY fecha_registro, id"
 
         df = pd.read_sql(text(query), engine, params=params)
+
+        # Convertir a hora local
+        df['fecha_registro'] = pd.to_datetime(df['fecha_registro'], utc=True).dt.tz_convert('America/Mexico_City')
 
         if df.empty:
             st.warning("⚠ No se encontraron registros para los filtros seleccionados.")

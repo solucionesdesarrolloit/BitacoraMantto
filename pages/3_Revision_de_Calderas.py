@@ -44,10 +44,10 @@ actividades = [
 # ------- FORMULARIO ----------
 with st.form("calderas_form", clear_on_submit=True):
 
-    turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
-    caldera = st.selectbox("Caldera", ["Caldera 1", "Caldera 2", "Caldera 3"])
     operador = st.selectbox("Operador de turno",
                         ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
+    turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
+    caldera = st.selectbox("Caldera", ["Caldera 1", "Caldera 2", "Caldera 3"])
 
     respuestas = []
 
