@@ -10,8 +10,7 @@ st.set_page_config(page_title="Registros de Calderas", page_icon="📋")
 st.header("📘 Hisorial de Registros de Calderas")
 
 # ---- FILTROS -----
-calderas_lista = ["(Todos)", "Caldera 1", "Caldera 2", "Caldera 3"]
-caldera = st.selectbox("Caldera", calderas_lista)
+
 try:
     df_turnos = pd.read_sql(
         "SELECT DISTINCT turno FROM calderas ORDER BY turno",
@@ -21,9 +20,10 @@ try:
 except:
     lista_turnos = ["(Todos)"]
 
+fecha = st.date_input("Selecciona la Fecha:", value=date.today())
+calderas_lista = ["(Todos)", "Caldera 1", "Caldera 2", "Caldera 3"]
+caldera = st.selectbox("Caldera", calderas_lista)
 turno = st.selectbox("Selecciona turno", lista_turnos)
-
-fecha = st.date_input("Fecha", value=date.today())
 
 # Obtener operadores únicos
 #try:

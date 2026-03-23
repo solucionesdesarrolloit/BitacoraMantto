@@ -10,7 +10,7 @@ st.header("📘 Historial de Registros de actividades del Turno")
 
 
 # --- FILTROS ---
-fecha = st.date_input("Fecha", value=date.today())
+fecha = st.date_input("Selecciona la Fecha:", value=date.today())
 try:
     df_turnos = pd.read_sql(
         "SELECT DISTINCT turno FROM validacion_alberca ORDER BY turno",
