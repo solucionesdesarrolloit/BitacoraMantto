@@ -12,10 +12,8 @@ if "mensaje" not in st.session_state:
 if "limpiar" not in st.session_state:
     st.session_state.limpiar = False
 
-# ---- MENSAJE ----
-if st.session_state.mensaje:
-    st.success(st.session_state.mensaje)
-    st.session_state.mensaje = ""
+if "operador" not in st.session_state:
+    st.session_state.operador = "Selecciona operador"
 
 # ------ ACTIVIDADES ------
 actividades = [
@@ -38,6 +36,7 @@ if st.session_state.limpiar:
     for key in list(st.session_state.keys()):
         if key.startswith("act_"):
             st.session_state[key] = ""
+    st.session_state.operador = "Selecciona operador"  # 👈 reset operador
     st.session_state.limpiar = False
 
 # ---- FORM ----
@@ -45,7 +44,8 @@ with st.form("calderas_form"):
 
     operador = st.selectbox(
         "Operador de turno",
-        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"]
+        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"],
+        key="operador"
     )
 
     turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
@@ -61,11 +61,14 @@ with st.form("calderas_form"):
 
     submit = st.form_submit_button("💾 Guardar registro")
 
+# ---- MENSAJE ABAJO ----
+placeholder_msg = st.empty()
+
 # ---- GUARDAR ----
 if submit:
 
     if operador == "Selecciona operador":
-        st.warning("Selecciona un operador valido")
+        placeholder_msg.warning("Selecciona un operador valido")
         st.stop()
 
     try:
@@ -93,4 +96,9 @@ if submit:
         st.rerun()
 
     except Exception as e:
-        st.error(f"❌ Error al guardar: {e}")
+        placeholder_msg.error(f"❌ Error al guardar: {e}")
+
+# ---- MOSTRAR MENSAJE ABAJO ----
+if st.session_state.mensaje:
+    placeholder_msg.success(st.session_state.mensaje)
+    st.session_state.mensaje = ""
