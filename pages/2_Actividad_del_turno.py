@@ -9,18 +9,11 @@ st.set_page_config(page_title="Bitácora de Actividades", page_icon="🏊", layo
 st.header("🧾 Actividades del Turno")
 
 # ---- SESSION STATE ----
-if "guardado" not in st.session_state:
-    st.session_state.guardado = False
-
 if "mensaje" not in st.session_state:
     st.session_state.mensaje = ""
 
 if "limpiar" not in st.session_state:
     st.session_state.limpiar = False
-
-# ---- MOSTRAR MENSAJE ----
-if st.session_state.mensaje:
-    st.success(st.session_state.mensaje)
 
 # ------ ACTIVIDADES ------
 actividades = [
@@ -50,20 +43,25 @@ actividades = [
     "24. Apagar luces de albercas"
 ]
 
-# ---- LIMPIAR INPUTS (ANTES DE CREARLOS) ----
+# ---- LIMPIAR INPUTS (ANTES DEL FORM) ----
 if st.session_state.limpiar:
     for key in list(st.session_state.keys()):
-        if key.endswith("_obs") or key.startswith("act_"):
+        if key.startswith("act_"):
             st.session_state[key] = ""
+    st.session_state.operador = "Selecciona operador"
     st.session_state.limpiar = False
 
 # ---- FORMULARIO ----
 operador = st.selectbox(
     "Operador de turno",
-    ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"]
+    ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"],
+    key="operador"
 )
 
-turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
+turno = st.selectbox(
+    "Turno",
+    ["Turno Matutino", "Turno Vespertino"]
+)
 
 respuestas = []
 
@@ -88,16 +86,16 @@ for i, act in enumerate(actividades):
         "turno": turno
     })
 
-# ---- BOTÓN GUARDAR ----
-if st.button("💾 Guardar registro", disabled=st.session_state.guardado):
+# ---- BOTÓN ----
+placeholder_msg = st.empty()  # 👈 para mostrar mensaje abajo
+
+if st.button("💾 Guardar registro"):
 
     if operador == "Selecciona operador":
-        st.warning("Selecciona un operador valido")
+        placeholder_msg.warning("Selecciona un operador valido")
         st.stop()
 
     try:
-        st.session_state.guardado = True
-
         with engine.begin() as conn:
             for r in respuestas:
                 conn.execute(text("""
@@ -106,16 +104,18 @@ if st.button("💾 Guardar registro", disabled=st.session_state.guardado):
                     VALUES (:turno, :actividad, :verificacion, :operador, :observaciones)
                 """), r)
 
-        # ✅ guardar mensaje persistente
-        st.session_state.mensaje = "✅ Registros guardados correctamente."
+        # guardar mensaje
+        st.session_state.mensaje = "✅ Registros guardados correctamente"
 
-        # ✅ activar limpieza en siguiente render
+        # activar limpieza
         st.session_state.limpiar = True
-
-        st.session_state.guardado = False
 
         st.rerun()
 
     except Exception as e:
-        st.session_state.guardado = False
-        st.error(f"❌ Error al guardar los datos: {e}")
+        placeholder_msg.error(f"❌ Error al guardar los datos: {e}")
+
+# ---- MOSTRAR MENSAJE ABAJO ----
+if st.session_state.mensaje:
+    placeholder_msg.success(st.session_state.mensaje)
+    st.session_state.mensaje = ""
