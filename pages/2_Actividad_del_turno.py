@@ -1,16 +1,28 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
-from sqlalchemy import create_engine
-from sqlalchemy import create_engine, text
+from sqlalchemy import text
 from bd import engine
 
-# ------ CONFIGURACIÓN DE LA PÁGINA ------
+# ------ CONFIGURACIÓN ------
 
 st.set_page_config(page_title="Bitácora de Actividades", page_icon="🏊", layout="centered")
-
 st.header("🧾 Actividades del Turno")
 
+# ---- SESSION STATE ----
+if "guardado" not in st.session_state:
+    st.session_state.guardado = False
+
+if "mensaje" not in st.session_state:
+    st.session_state.mensaje = ""
+
+if "limpiar" not in st.session_state:
+    st.session_state.limpiar = False
+
+# ---- MOSTRAR MENSAJE ----
+if st.session_state.mensaje:
+    st.success(st.session_state.mensaje)
+
+# ------ ACTIVIDADES ------
 actividades = [
     "01. Revisar area de albercas y cuerpos de agua",
     "02. Revisar cuartos de maquinas buscando fugas de agua",
@@ -37,18 +49,36 @@ actividades = [
     "23. Revisar que equipos de filtrado y calentadores funcionen bien",
     "24. Apagar luces de albercas"
 ]
-operador = st.selectbox("Operador de turno",
-                        ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"])
+
+# ---- LIMPIAR INPUTS (ANTES DE CREARLOS) ----
+if st.session_state.limpiar:
+    for key in list(st.session_state.keys()):
+        if key.endswith("_obs") or key.startswith("act_"):
+            st.session_state[key] = ""
+    st.session_state.limpiar = False
+
+# ---- FORMULARIO ----
+operador = st.selectbox(
+    "Operador de turno",
+    ["Selecciona operador", "Adan Angeles", "Armando Sabino", "Omar", "Martin"]
+)
+
 turno = st.selectbox("Turno", ["Turno Matutino", "Turno Vespertino"])
 
 respuestas = []
-for act in actividades:
+
+for i, act in enumerate(actividades):
     st.markdown(f"**{act}**")
     col1, col2 = st.columns([1, 2])
+
+    key_ver = f"act_{i}"
+    key_obs = f"act_{i}_obs"
+
     with col1:
-        verificacion = st.selectbox("", ["N/A","No", "Si"], key=act)
+        verificacion = st.selectbox("", ["N/A", "No", "Si"], key=key_ver)
+
     with col2:
-        observaciones = st.text_input("Observaciones", key=act+"_obs")
+        observaciones = st.text_input("Observaciones", key=key_obs)
 
     respuestas.append({
         "actividad": act,
@@ -58,34 +88,34 @@ for act in actividades:
         "turno": turno
     })
 
-# ---- Botón para guardar ----
-# --- Botón para guardar ---
-if "guardado" not in st.session_state:
-    st.session_state.guardado = False
-
+# ---- BOTÓN GUARDAR ----
 if st.button("💾 Guardar registro", disabled=st.session_state.guardado):
+
     if operador == "Selecciona operador":
         st.warning("Selecciona un operador valido")
         st.stop()
-    else:
-        st.session_state.guardado = True  # Deshabilita el botón inmediatamente
-        try:
-            with engine.begin() as conn:
-                for r in respuestas:
-                    conn.execute(text("""
-                        INSERT INTO validacion_alberca (turno, actividad, verificacion, operador, observaciones)
-                        VALUES (:turno, :actividad, :verificacion, :operador, :observaciones)
-                    """), r)
 
-            st.success("✅ Registros guardados correctamente.")
-            # Limpiar session_state de todos los widgets
-            for act in actividades:
-                if act in st.session_state:
-                    del st.session_state[act]
-                if act + "_obs" in st.session_state:
-                    del st.session_state[act + "_obs"]
-            st.session_state.guardado = False  # Rehabilita para nuevo registro
-            st.rerun()
-        except Exception as e:
-            st.session_state.guardado = False
-            st.error(f"❌ Error al guardar los datos: {e}")
+    try:
+        st.session_state.guardado = True
+
+        with engine.begin() as conn:
+            for r in respuestas:
+                conn.execute(text("""
+                    INSERT INTO validacion_alberca 
+                    (turno, actividad, verificacion, operador, observaciones)
+                    VALUES (:turno, :actividad, :verificacion, :operador, :observaciones)
+                """), r)
+
+        # ✅ guardar mensaje persistente
+        st.session_state.mensaje = "✅ Registros guardados correctamente."
+
+        # ✅ activar limpieza en siguiente render
+        st.session_state.limpiar = True
+
+        st.session_state.guardado = False
+
+        st.rerun()
+
+    except Exception as e:
+        st.session_state.guardado = False
+        st.error(f"❌ Error al guardar los datos: {e}")
