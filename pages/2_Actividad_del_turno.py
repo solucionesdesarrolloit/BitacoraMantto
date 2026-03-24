@@ -59,6 +59,7 @@ for act in actividades:
     })
 
 # ---- Botón para guardar ----
+# --- Botón para guardar ---
 if "guardado" not in st.session_state:
     st.session_state.guardado = False
 
