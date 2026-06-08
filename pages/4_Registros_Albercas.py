@@ -37,7 +37,7 @@ areas = [
     "Jacuzzi adultos", "Jacuzzi niños", "Canal de Nado"
 ]
 
-area = st.selectbox("Área:", areas)
+area = st.selectbox("Selecciona Cuerpo de agua", areas)
 
 # Operador con selectbox
 #operador = st.selectbox("Operador:", operadores_lista)
@@ -92,13 +92,13 @@ if buscar and not df.empty:
                     modal_class = f"foto-modal-{foto_idx}"
                     foto_html = (
                         "<hr>"
-                        "<p><strong>Evidencia fotográfica:</strong></p>"
+                        "<p style='margin-bottom: 4px;'><strong>Evidencia fotográfica:</strong></p>"
                         f"<img src='{imagen_data_url}' "
-                        "style='width: 90%; max-width: 450px; border-radius: 7px; margin-top: 5px;'>"
+                        "style='width: 75%; max-width: 350px; border-radius: 7px; margin-top: 2px;'>"
                         f"<input type='checkbox' id='{modal_id}' style='display: none;'>"
                         f"<style>#{modal_id}:not(:checked) ~ .{modal_class} {{ display: none; }}"
                         f"#{modal_id}:checked ~ .{modal_class} {{ display: flex; }}</style>"
-                        "<div style='margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;'>"
+                        "<div style='margin-top: 3px; display: flex; gap: 10px; flex-wrap: wrap;'>"
                         f"<label for='{modal_id}' "
                         "title='Ver grande' "
                         "style='border: 1px solid #c9c9c9; color: #444; width: 34px; height: 34px; "
@@ -121,7 +121,7 @@ if buscar and not df.empty:
                         "background-color: rgba(255,255,255,0.92); color: #222; border-radius: 50%; "
                         "width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; "
                         "font-size: 20px; cursor: pointer; z-index: 1;'>&times;</label>"
-                        f"<img src='{imagen_data_url}' style='max-width: 95vw; max-height: 92vh; "
+                        f"<img src='{imagen_data_url}' style='max-width: 98vw; max-height: 96vh; "
                         "border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.35);'>"
                         "</div>"
                         "</div>"
@@ -146,7 +146,7 @@ if buscar and not df.empty:
                     <p><strong>Temperatura:</strong> {row['temperatura']} °C</p>
                     <p><strong>Claridad:</strong> {row['claridad']}</p>
                     <p><strong>Químico agregado:</strong> {row['quimico']} - {row['quimico_agregado']} - {row['cantidad']} - {row['unidad_cantidad']}</p>
-                    <p><strong>Cantidad:</strong> {fecha_limpia}</p>
+                    <p><strong>Fecha:</strong> {fecha_limpia}</p>
                     {foto_html}
 
                 </div>
