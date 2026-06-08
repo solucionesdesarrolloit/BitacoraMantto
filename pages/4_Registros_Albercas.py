@@ -74,7 +74,7 @@ if buscar and not df.empty:
     storage_client = storage.Client()
     bucket = storage_client.bucket("bitacora-mantto-fotos")
 
-    for _, row in df.iterrows():
+    for foto_idx, (_, row) in enumerate(df.iterrows()):
         with st.container():
             # Formatear fecha sin microsegundos
             fecha_limpia = datetime.strftime(row["fecha_registro"], "%d/%m/%Y %H:%M")
@@ -88,18 +88,42 @@ if buscar and not df.empty:
                     imagen_base64 = base64.b64encode(imagen_bytes).decode("utf-8")
                     imagen_data_url = f"data:image/jpeg;base64,{imagen_base64}"
                     nombre_archivo = str(row["foto_path"]).split("/")[-1]
+                    modal_id = f"foto_modal_{foto_idx}"
+                    modal_class = f"foto-modal-{foto_idx}"
                     foto_html = (
                         "<hr>"
                         "<p><strong>Evidencia fotográfica:</strong></p>"
                         f"<img src='{imagen_data_url}' "
-                        "style='width: 100%; max-width: 400px; border-radius: 8px; margin-top: 6px;'>"
-                        "<div style='margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;'>"
-                        f"<a href='{imagen_data_url}' target='_blank' "
-                        "style='background-color: #1f77b4; color: white; padding: 8px 12px; "
-                        "border-radius: 6px; text-decoration: none; font-weight: 600;'>Ver grande</a>"
+                        "style='width: 90%; max-width: 450px; border-radius: 7px; margin-top: 5px;'>"
+                        f"<input type='checkbox' id='{modal_id}' style='display: none;'>"
+                        f"<style>#{modal_id}:not(:checked) ~ .{modal_class} {{ display: none; }}"
+                        f"#{modal_id}:checked ~ .{modal_class} {{ display: flex; }}</style>"
+                        "<div style='margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;'>"
+                        f"<label for='{modal_id}' "
+                        "title='Ver grande' "
+                        "style='border: 1px solid #c9c9c9; color: #444; width: 34px; height: 34px; "
+                        "border-radius: 6px; text-decoration: none; font-size: 18px; cursor: pointer; "
+                        "background-color: transparent; display: inline-flex; align-items: center; "
+                        "justify-content: center;'>&#128269;</label>"
                         f"<a href='{imagen_data_url}' download='{nombre_archivo}' "
-                        "style='background-color: #2e7d32; color: white; padding: 8px 12px; "
-                        "border-radius: 6px; text-decoration: none; font-weight: 600;'>Descargar</a>"
+                        "title='Descargar' "
+                        "style='border: 1px solid #c9c9c9; color: #444; width: 34px; height: 34px; "
+                        "border-radius: 6px; text-decoration: none; font-size: 18px; "
+                        "background-color: transparent; display: inline-flex; align-items: center; "
+                        "justify-content: center;'>&#8681;</a>"
+                        "</div>"
+                        f"<div class='{modal_class}' style='position: fixed; inset: 0; z-index: 999999; "
+                        "background-color: rgba(0,0,0,0.78); align-items: center; justify-content: center; "
+                        "padding: 24px;'>"
+                        f"<label for='{modal_id}' style='position: absolute; inset: 0; cursor: zoom-out;'></label>"
+                        "<div style='position: relative; max-width: 95vw; max-height: 92vh;'>"
+                        f"<label for='{modal_id}' style='position: absolute; right: 8px; top: 8px; "
+                        "background-color: rgba(255,255,255,0.92); color: #222; border-radius: 50%; "
+                        "width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; "
+                        "font-size: 20px; cursor: pointer; z-index: 1;'>&times;</label>"
+                        f"<img src='{imagen_data_url}' style='max-width: 95vw; max-height: 92vh; "
+                        "border-radius: 8px; box-shadow: 0 12px 40px rgba(0,0,0,0.35);'>"
+                        "</div>"
                         "</div>"
                     )
                 except Exception as e:
