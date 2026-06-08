@@ -114,11 +114,19 @@ if quimico == "Sí":
         step=0.5,
         key=f"cantidad_{k}"
     )
+    unidad_cantidad = st.selectbox(
+        "Unidad",
+        ["ml", "g"],
+        index=None,
+        placeholder="Selecciona una unidad",
+        key=f"unidad_cantidad_{k}"
+    )
     
     foto = st.camera_input("Fotografia evidencia")
 else:
     quimico_agregado = "Ninguno"
     cantidad = 0
+    unidad_cantidad = "N/A"
 
 
 # ------- GUARDADO ------
@@ -129,6 +137,14 @@ if st.button("💾 Guardar registro"):
 
     if quimico is None:
         st.warning("Selecciona si se agregó químico.")
+        st.stop()
+
+    if quimico == "Sí" and cantidad <= 0:
+        st.warning("La cantidad agregada debe ser mayor a 0.")
+        st.stop()
+
+    if quimico == "Sí" and unidad_cantidad is None:
+        st.warning("Selecciona la unidad de la cantidad agregada.")
         st.stop()
     
     if quimico == "Sí" and foto is None:
@@ -158,6 +174,7 @@ if st.button("💾 Guardar registro"):
             "quimico": quimico,
             "quimico_agregado": quimico_agregado,
             "cantidad": cantidad,
+            "unidad_cantidad": unidad_cantidad,
             "operador": operador,
             "foto_path": foto_path,
             "turno": turno
