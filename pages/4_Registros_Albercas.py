@@ -4,6 +4,8 @@ from sqlalchemy import create_engine, text
 from datetime import date
 from datetime import datetime
 from bd import engine
+from google.cloud import storage
+from datetime import timedelta
 
 # ------ CONFIGURACIÓN DE LA PÁGINA ------
 
@@ -68,6 +70,8 @@ if buscar:
 
 # ----- TARJETAS -----
 if buscar and not df.empty:
+    storage_client = storage.Client()
+    bucket = storage_client.bucket("bitacora-mantto-fotos")
 
     for _, row in df.iterrows():
         with st.container():
@@ -97,3 +101,23 @@ if buscar and not df.empty:
                 """,
                 unsafe_allow_html=True
             )
+            # Mostrar foto si existe
+            if pd.notna(row["foto_path"]) and row["foto_path"] != "":
+
+                try:
+                    blob = bucket.blob(row["foto_path"])
+
+                    url = blob.generate_signed_url(
+                        version="v4",
+                        expiration=timedelta(hours=1),
+                        method="GET"
+                    )
+
+                    st.image(
+                        url,
+                        caption="Evidencia fotográfica",
+                        width=400
+                    )
+
+                except Exception as e:
+                    st.warning(f"No fue posible cargar la imagen: {e}")
