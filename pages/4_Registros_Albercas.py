@@ -86,11 +86,21 @@ if buscar and not df.empty:
                     blob = bucket.blob(row["foto_path"])
                     imagen_bytes = blob.download_as_bytes()
                     imagen_base64 = base64.b64encode(imagen_bytes).decode("utf-8")
+                    imagen_data_url = f"data:image/jpeg;base64,{imagen_base64}"
+                    nombre_archivo = str(row["foto_path"]).split("/")[-1]
                     foto_html = (
                         "<hr>"
                         "<p><strong>Evidencia fotográfica:</strong></p>"
-                        f"<img src='data:image/jpeg;base64,{imagen_base64}' "
+                        f"<img src='{imagen_data_url}' "
                         "style='width: 100%; max-width: 400px; border-radius: 8px; margin-top: 6px;'>"
+                        "<div style='margin-top: 10px; display: flex; gap: 8px; flex-wrap: wrap;'>"
+                        f"<a href='{imagen_data_url}' target='_blank' "
+                        "style='background-color: #1f77b4; color: white; padding: 8px 12px; "
+                        "border-radius: 6px; text-decoration: none; font-weight: 600;'>Ver grande</a>"
+                        f"<a href='{imagen_data_url}' download='{nombre_archivo}' "
+                        "style='background-color: #2e7d32; color: white; padding: 8px 12px; "
+                        "border-radius: 6px; text-decoration: none; font-weight: 600;'>Descargar</a>"
+                        "</div>"
                     )
                 except Exception as e:
                     st.warning(f"No fue posible cargar la imagen: {e}")
@@ -111,7 +121,7 @@ if buscar and not df.empty:
                     <p><strong>pH:</strong> {row['ph']}</p>
                     <p><strong>Temperatura:</strong> {row['temperatura']} °C</p>
                     <p><strong>Claridad:</strong> {row['claridad']}</p>
-                    <p><strong>Químico agregado:</strong> {row['quimico']} - {row['quimico_agregado']} - {row['cantidad']}</p>
+                    <p><strong>Químico agregado:</strong> {row['quimico']} - {row['quimico_agregado']} - {row['cantidad']} - {row['unidad_cantidad']}</p>
                     <p><strong>Cantidad:</strong> {fecha_limpia}</p>
                     {foto_html}
 
