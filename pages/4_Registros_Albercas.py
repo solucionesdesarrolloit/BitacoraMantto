@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
+import base64
 from sqlalchemy import create_engine, text
 from datetime import date
 from datetime import datetime
 from bd import engine
 from google.cloud import storage
+from datetime import timedelta
 
 # ------ CONFIGURACIÓN DE LA PÁGINA ------
 
@@ -76,6 +78,29 @@ if buscar and not df.empty:
         with st.container():
             # Formatear fecha sin microsegundos
             fecha_limpia = datetime.strftime(row["fecha_registro"], "%d/%m/%Y %H:%M")
+            foto_html = ""
+
+            # Mostrar foto dentro de la tarjeta si existe
+            if pd.notna(row["foto_path"]) and row["foto_path"]:
+                try:
+                    blob = bucket.blob(row["foto_path"])
+                    imagen_bytes = blob.download_as_bytes()
+                    imagen_base64 = base64.b64encode(imagen_bytes).decode("utf-8")
+                    foto_html = f"""
+                    <hr>
+                    <p><strong>Evidencia fotográfica:</strong></p>
+                    <img
+                        src="data:image/jpeg;base64,{imagen_base64}"
+                        style="
+                            width: 100%;
+                            max-width: 400px;
+                            border-radius: 8px;
+                            margin-top: 6px;
+                        "
+                    >
+                    """
+                except Exception as e:
+                    st.warning(f"No fue posible cargar la imagen: {e}")
 
             st.markdown(
                 f"""
@@ -95,24 +120,9 @@ if buscar and not df.empty:
                     <p><strong>Claridad:</strong> {row['claridad']}</p>
                     <p><strong>Químico agregado:</strong> {row['quimico']} - {row['quimico_agregado']}</p>
                     <p><strong>Fecha registro:</strong> {fecha_limpia}</p>
+                    {foto_html}
 
                 </div>
                 """,
                 unsafe_allow_html=True
             )
-            # Mostrar foto si existe
-            if pd.notna(row["foto_path"]) and row["foto_path"]:
-
-                try:
-                    blob = bucket.blob(row["foto_path"])
-
-                    imagen_bytes = blob.download_as_bytes()
-
-                    st.image(
-                        imagen_bytes,
-                        caption="Evidencia fotográfica",
-                        width=400
-                    )
-
-                except Exception as e:
-                    st.warning(f"No fue posible cargar la imagen: {e}")
