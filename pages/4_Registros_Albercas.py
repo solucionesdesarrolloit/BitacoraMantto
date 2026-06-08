@@ -86,19 +86,12 @@ if buscar and not df.empty:
                     blob = bucket.blob(row["foto_path"])
                     imagen_bytes = blob.download_as_bytes()
                     imagen_base64 = base64.b64encode(imagen_bytes).decode("utf-8")
-                    foto_html = f"""
-                    <hr>
-                    <p><strong>Evidencia fotográfica:</strong></p>
-                    <img
-                        src="data:image/jpeg;base64,{imagen_base64}"
-                        style="
-                            width: 100%;
-                            max-width: 400px;
-                            border-radius: 8px;
-                            margin-top: 6px;
-                        "
-                    >
-                    """
+                    foto_html = (
+                        "<hr>"
+                        "<p><strong>Evidencia fotográfica:</strong></p>"
+                        f"<img src='data:image/jpeg;base64,{imagen_base64}' "
+                        "style='width: 100%; max-width: 400px; border-radius: 8px; margin-top: 6px;'>"
+                    )
                 except Exception as e:
                     st.warning(f"No fue posible cargar la imagen: {e}")
 
