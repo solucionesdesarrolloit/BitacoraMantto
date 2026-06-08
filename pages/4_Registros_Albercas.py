@@ -111,8 +111,8 @@ if buscar and not df.empty:
                     <p><strong>pH:</strong> {row['ph']}</p>
                     <p><strong>Temperatura:</strong> {row['temperatura']} °C</p>
                     <p><strong>Claridad:</strong> {row['claridad']}</p>
-                    <p><strong>Químico agregado:</strong> {row['quimico']} - {row['quimico_agregado']}</p>
-                    <p><strong>Fecha registro:</strong> {fecha_limpia}</p>
+                    <p><strong>Químico agregado:</strong> {row['quimico']} - {row['quimico_agregado']} - {row['cantidad']}</p>
+                    <p><strong>Cantidad:</strong> {fecha_limpia}</p>
                     {foto_html}
 
                 </div>
