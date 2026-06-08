@@ -3,6 +3,8 @@ import pandas as pd
 from datetime import datetime
 from sqlalchemy import create_engine
 from bd import engine
+from google.cloud import storage
+import uuid
 
 # ------ CONFIGURACIÓN DE LA PÁGINA ------
 
@@ -78,6 +80,8 @@ claridad = st.selectbox(
 quimico = st.selectbox(
     "¿Se agregó químico?",
     ["No", "Sí"],
+    index=None,
+    placeholder="Selecciona una opción",
     key=f"quimico_{k}"
 )
 
@@ -108,9 +112,13 @@ if quimico == "Sí":
         step=0.5,
         key=f"cantidad_{k}"
     )
+    
+    foto_path = st.camera_input("Fotografia evidencia")
 else:
     quimico_agregado = "Ninguno"
     cantidad = 0
+    foto = None
+
 
 # ------- GUARDADO ------
 if st.button("💾 Guardar registro"):
@@ -119,6 +127,24 @@ if st.button("💾 Guardar registro"):
         st.stop()
 
     try:
+        poto_path = None
+
+        if foto is not None:
+            import uuid
+            from google.cloud import storage
+
+            storage_client = storage.Client()
+
+            bucket = storage_client.bucket("bitacora-mantto-fotos")
+
+            foto_path = f"albercas/{uuid.uuid4()}.jpg"
+
+            blob = bucket.blob(foto_path)
+
+            blob.upload_from_file(
+                foto,
+                content_type="image/jpeg"
+            )
         nuevo_registro = pd.DataFrame([{
             "area": area,
             "cloro": cloro,
@@ -129,6 +155,7 @@ if st.button("💾 Guardar registro"):
             "quimico_agregado": quimico_agregado,
             "cantidad": cantidad,
             "operador": operador,
+            "foto_path": foto_path,
             "turno": turno
         }])
 
