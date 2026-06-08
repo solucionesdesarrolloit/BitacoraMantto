@@ -126,6 +126,10 @@ if st.button("💾 Guardar registro"):
     if operador == "Selecciona operador":
         st.warning("Selecciona un operador válido")
         st.stop()
+
+    if quimico is None:
+        st.warning("Selecciona si se agregó químico.")
+        st.stop()
     
     if quimico == "Sí" and foto is None:
         st.warning("Debes tomar una fotografía como evidencia.")
