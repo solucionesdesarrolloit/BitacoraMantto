@@ -5,7 +5,6 @@ from datetime import date
 from datetime import datetime
 from bd import engine
 from google.cloud import storage
-from datetime import timedelta
 
 # ------ CONFIGURACIÓN DE LA PÁGINA ------
 
@@ -102,19 +101,15 @@ if buscar and not df.empty:
                 unsafe_allow_html=True
             )
             # Mostrar foto si existe
-            if pd.notna(row["foto_path"]) and row["foto_path"] != "":
+            if pd.notna(row["foto_path"]) and row["foto_path"]:
 
                 try:
                     blob = bucket.blob(row["foto_path"])
 
-                    url = blob.generate_signed_url(
-                        version="v4",
-                        expiration=timedelta(hours=1),
-                        method="GET"
-                    )
+                    imagen_bytes = blob.download_as_bytes()
 
                     st.image(
-                        url,
+                        imagen_bytes,
                         caption="Evidencia fotográfica",
                         width=400
                     )
