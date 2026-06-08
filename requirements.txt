@@ -1,8 +1,7 @@
 streamlit
-sqlalchemy
 psycopg2-binary
 pandas
 python-dotenv
 datetime
 sqlalchemy 
-google-cloud-storage
+google-cloud-storage>=2.16.0

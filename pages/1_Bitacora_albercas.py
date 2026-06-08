@@ -86,6 +86,8 @@ quimico = st.selectbox(
 )
 
 # Solo muestra estos campos si se agregó químico
+foto = None
+
 if quimico == "Sí":
     quimico_agregado = st.selectbox(
         "¿Cuál?",
@@ -113,11 +115,10 @@ if quimico == "Sí":
         key=f"cantidad_{k}"
     )
     
-    foto_path = st.camera_input("Fotografia evidencia")
+    foto = st.camera_input("Fotografia evidencia")
 else:
     quimico_agregado = "Ninguno"
     cantidad = 0
-    foto = None
 
 
 # ------- GUARDADO ------
@@ -125,22 +126,21 @@ if st.button("💾 Guardar registro"):
     if operador == "Selecciona operador":
         st.warning("Selecciona un operador válido")
         st.stop()
+    
+    if quimico == "Sí" and foto is None:
+        st.warning("Debes tomar una fotografía como evidencia.")
+        st.stop()
 
     try:
-        poto_path = None
+        
+        foto_path = None
 
         if foto is not None:
-            import uuid
-            from google.cloud import storage
 
             storage_client = storage.Client()
-
             bucket = storage_client.bucket("bitacora-mantto-fotos")
-
             foto_path = f"albercas/{uuid.uuid4()}.jpg"
-
             blob = bucket.blob(foto_path)
-
             blob.upload_from_file(
                 foto,
                 content_type="image/jpeg"
