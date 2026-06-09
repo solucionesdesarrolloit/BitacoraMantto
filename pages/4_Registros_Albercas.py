@@ -10,7 +10,7 @@ from datetime import timedelta
 
 # ------ CONFIGURACIÓN DE LA PÁGINA ------
 
-st.set_page_config(page_title="Registros de Calderas", page_icon="📋")
+st.set_page_config(page_title="Registros de Albercas", page_icon="📋")
 st.header("📘 Historial de parámetros de albercas y cuerpos de agua")
 
 # Para evitar error previo
@@ -94,7 +94,7 @@ if buscar and not df.empty:
                         "<hr>"
                         "<p style='margin-bottom: 5px;'><strong>Evidencia fotográfica:</strong></p>"
                         f"<img src='{imagen_data_url}' "
-                        "style='width: 75%; max-width: 350px; border-radius: 7px; margin-top: 2px; margin-left: 20px;'>"
+                        "style='width: 55%; max-width: 260px; border-radius: 7px; margin-top: 2px; margin-left: 20px;'>"
                         f"<input type='checkbox' id='{modal_id}' style='display: none;'>"
                         f"<style>#{modal_id}:not(:checked) ~ .{modal_class} {{ display: none; }}"
                         f"#{modal_id}:checked ~ .{modal_class} {{ display: flex; }}</style>"

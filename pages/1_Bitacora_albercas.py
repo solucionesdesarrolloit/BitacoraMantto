@@ -115,7 +115,7 @@ if quimico == "Sí":
         key=f"cantidad_{k}"
     )
     unidad_cantidad = st.selectbox(
-        "Unidad",
+        "Unidad de medida",
         ["ml", "g", "L", "Kg"],
         index=None,
         placeholder="Selecciona una unidad",
