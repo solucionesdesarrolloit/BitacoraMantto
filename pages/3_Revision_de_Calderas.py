@@ -139,6 +139,18 @@ if submit:
         placeholder_msg.warning("Selecciona si se aplico Powerquim N-5")
         st.stop()
 
+    if sal == "Si" and foto_sal is None:
+        placeholder_msg.warning("Debes tomar una foto de la sal industrial aplicada")
+        st.stop()
+
+    if pq14 == "Si" and foto_pq14 is None:
+        placeholder_msg.warning("Debes tomar una foto del Powerquim N-14 aplicado")
+        st.stop()
+
+    if pq5 == "Si" and foto_pq5 is None:
+        placeholder_msg.warning("Debes tomar una foto del Powerquim N-5 aplicado")
+        st.stop()
+
     try:
         # ---- SUBIR FOTOS A GCS ----
         gcs_client = storage.Client()
