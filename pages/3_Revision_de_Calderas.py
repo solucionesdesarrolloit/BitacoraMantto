@@ -17,6 +17,9 @@ if "limpiar" not in st.session_state:
 if "operador" not in st.session_state:
     st.session_state.operador = "Selecciona operador"
 
+if "foto_version" not in st.session_state:
+    st.session_state.foto_version = 0
+
 # ------ ACTIVIDADES ------
 actividades = [
     "H.P Caldera","Modelo Caldera","Año de Fabricacion","Tipo de combustible",
@@ -42,9 +45,17 @@ if st.session_state.limpiar:
     st.session_state.sal = None
     st.session_state.pq14 = None
     st.session_state.pq5 = None
+    st.session_state.sal_cantidad = None
+    st.session_state.pq14_cantidad = None
+    st.session_state.pq5_cantidad = None
+    st.session_state.foto_version += 1
     st.session_state.turno = "Turno Matutino"
     st.session_state.caldera = "Caldera 1"
     st.session_state.limpiar = False
+
+foto_sal_key = f"foto_sal_{st.session_state.foto_version}"
+foto_pq14_key = f"foto_pq14_{st.session_state.foto_version}"
+foto_pq5_key = f"foto_pq5_{st.session_state.foto_version}"
 
 # ---- CAMPOS ----
 operador = st.selectbox(
@@ -66,9 +77,9 @@ sal = st.selectbox(
 
 if sal == "Si":
     sal_cantidad = st.number_input(
-        "¿Cuanto? (KG)", min_value=0.1, max_value=100.0, step=0.5, key="sal_cantidad"
+        "¿Cuanto? (KG)", min_value=0.1, max_value=100.0, value=None, step=0.5, key="sal_cantidad"
     )
-    foto_sal = st.camera_input("Foto de la sal aplicada", key="foto_sal")
+    foto_sal = st.camera_input("Foto de la sal aplicada", key=foto_sal_key)
 else:
     sal_cantidad = 0
     foto_sal = None
@@ -83,9 +94,9 @@ pq14 = st.selectbox(
 
 if pq14 == "Si":
     pq14_cantidad = st.number_input(
-        "¿Cuanto? (KG)", min_value=0.1, max_value=100.0, step=0.5, key="pq14_cantidad"
+        "¿Cuanto? (KG)", min_value=0.1, max_value=100.0, value=None, step=0.5, key="pq14_cantidad"
     )
-    foto_pq14 = st.camera_input("Foto del Powerquim N-14 aplicado", key="foto_pq14")
+    foto_pq14 = st.camera_input("Foto del Powerquim N-14 aplicado", key=foto_pq14_key)
 else:
     pq14_cantidad = 0
     foto_pq14 = None
@@ -100,9 +111,9 @@ pq5 = st.selectbox(
 
 if pq5 == "Si":
     pq5_cantidad = st.number_input(
-        "¿Cuanto? (KG)", min_value=0.1, max_value=100.0, step=0.5, key="pq5_cantidad"
+        "¿Cuanto? (KG)", min_value=0.1, max_value=100.0, value=None, step=0.5, key="pq5_cantidad"
     )
-    foto_pq5 = st.camera_input("Foto del Powerquim N-5 aplicado", key="foto_pq5")
+    foto_pq5 = st.camera_input("Foto del Powerquim N-5 aplicado", key=foto_pq5_key)
 else:
     pq5_cantidad = 0
     foto_pq5 = None
@@ -122,6 +133,12 @@ placeholder_msg = st.empty()
 
 # ---- GUARDAR ----
 if submit:
+    sal_cantidad = st.session_state.get("sal_cantidad") if sal == "Si" else 0
+    pq14_cantidad = st.session_state.get("pq14_cantidad") if pq14 == "Si" else 0
+    pq5_cantidad = st.session_state.get("pq5_cantidad") if pq5 == "Si" else 0
+    foto_sal = st.session_state.get(foto_sal_key) if sal == "Si" else None
+    foto_pq14 = st.session_state.get(foto_pq14_key) if pq14 == "Si" else None
+    foto_pq5 = st.session_state.get(foto_pq5_key) if pq5 == "Si" else None
 
     if operador == "Selecciona operador":
         placeholder_msg.warning("Selecciona un operador valido")
@@ -137,6 +154,18 @@ if submit:
 
     if pq5 is None:
         placeholder_msg.warning("Selecciona si se aplico Powerquim N-5")
+        st.stop()
+
+    if sal == "Si" and (sal_cantidad is None or sal_cantidad <= 0):
+        placeholder_msg.warning("Captura la cantidad de sal industrial aplicada")
+        st.stop()
+
+    if pq14 == "Si" and (pq14_cantidad is None or pq14_cantidad <= 0):
+        placeholder_msg.warning("Captura la cantidad de Powerquim N-14 aplicado")
+        st.stop()
+
+    if pq5 == "Si" and (pq5_cantidad is None or pq5_cantidad <= 0):
+        placeholder_msg.warning("Captura la cantidad de Powerquim N-5 aplicado")
         st.stop()
 
     if sal == "Si" and foto_sal is None:
@@ -161,7 +190,7 @@ if submit:
                 return None
             path = f"calderas/{uuid.uuid4()}.jpg"
             blob = bucket.blob(path)
-            blob.upload_from_file(foto, content_type="image/jpeg")
+            blob.upload_from_string(foto.getvalue(), content_type="image/jpeg")
             return path
 
         foto_sal_path  = subir_foto(foto_sal)
