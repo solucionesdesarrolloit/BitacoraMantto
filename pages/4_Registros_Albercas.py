@@ -34,7 +34,9 @@ fecha = st.date_input("Selecciona la fecha:", value=date.today())
 areas = [
     "Todas",
     "Alberca Interior", "Alberca Exterior", "Chapoteadero",
-    "Jacuzzi adultos", "Jacuzzi niños", "Canal de Nado"
+    "Jacuzzi adultos", "Jacuzzi niños", "Canal de Nado", 
+    "Fuente circular motor lobby", "Fuente pared motor lobby",
+    "Fuente terraza cafeteria"
 ]
 
 area = st.selectbox("Selecciona Cuerpo de agua", areas)
